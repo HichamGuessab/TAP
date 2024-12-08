@@ -68,6 +68,9 @@ if __name__ == "__main__":
     filename = 'data/Loc1V1.wav'
     wave_read = wave.open(filename, 'rb')
 
+    print(wave_read.getparams())
+    # _wave_params(nchannels=1, sampwidth=2, framerate=16000, nframes=23021, comptype='NONE', compname='not compressed')
+
     loc1V1_signal, loc1V1_wr = load_audio('data/Loc1V1.wav')
     loc1V2_signal, loc1V2_wr = load_audio('data/Loc1V2.wav')
 
