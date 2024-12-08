@@ -39,6 +39,15 @@ def stream_audio(wave_read):
     finally:
         p.terminate()
 
+def extract_middle_segment(signal, wave_read, duration_ms):
+    sr = wave_read.getframerate()
+    num_samples = int((duration_ms / 1000) * sr)
+
+    start_index = len(signal) // 2 - num_samples // 2
+    end_index = start_index + num_samples
+
+    return signal[start_index:end_index], sr
+
 def display_spectrograms(wave_read_1, signal_1, title_1, wave_read_2, signal_2, title_2):
     sr1 = wave_read_1.getframerate()
     sr2 = wave_read_2.getframerate()
@@ -65,15 +74,14 @@ def display_spectrograms(wave_read_1, signal_1, title_1, wave_read_2, signal_2, 
     plt.show()
 
 if __name__ == "__main__":
-    filename = 'data/Loc1V1.wav'
-    wave_read = wave.open(filename, 'rb')
-
-    print(wave_read.getparams())
-    # _wave_params(nchannels=1, sampwidth=2, framerate=16000, nframes=23021, comptype='NONE', compname='not compressed')
-
     loc1V1_signal, loc1V1_wr = load_audio('data/Loc1V1.wav')
     loc1V2_signal, loc1V2_wr = load_audio('data/Loc1V2.wav')
+    loc2V1_signal, loc2V1_wr = load_audio('data/Loc2V1.wav')
+
+    print(loc1V1_wr.getparams())
+    # _wave_params(nchannels=1, sampwidth=2, framerate=16000, nframes=23021, comptype='NONE', compname='not compressed')
 
     # display_waveform(signal_1)
     # stream_audio(wave_read)
-    display_spectrograms(loc1V1_wr, loc1V1_signal, "Loc1V1", loc1V2_wr, loc1V2_signal, "Loc1V2")
+    # display_spectrograms(loc1V1_wr, loc1V1_signal, "Loc1V1", loc1V2_wr, loc1V2_signal, "Loc1V2")
+    # display_spectrograms(loc1V1_wr, loc1V1_signal, "Loc1V1", loc2V1_wr, loc2V1_signal, "Loc2V1")
