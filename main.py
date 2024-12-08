@@ -2,12 +2,15 @@ import wave
 import matplotlib.pyplot as plt
 import numpy as np
 import pyaudio
+import functions.canaux as canaux
+
 
 def load_audio(filename):
     wave_read = wave.open(filename, 'rb')
     frames = wave_read.readframes(wave_read.getnframes())
     signal = np.frombuffer(frames, dtype=np.int16)
     return signal, wave_read
+
 
 def display_waveform(signal):
     plt.figure()
@@ -16,6 +19,7 @@ def display_waveform(signal):
     plt.xlabel('Samples')
     plt.ylabel('Amplitude')
     plt.show()
+
 
 def stream_audio(wave_read):
     p = pyaudio.PyAudio()
@@ -39,6 +43,7 @@ def stream_audio(wave_read):
     finally:
         p.terminate()
 
+
 def extract_middle_segment(signal, wave_read, duration_ms):
     sr = wave_read.getframerate()
     num_samples = int((duration_ms / 1000) * sr)
@@ -47,6 +52,7 @@ def extract_middle_segment(signal, wave_read, duration_ms):
     end_index = start_index + num_samples
 
     return signal[start_index:end_index], sr
+
 
 def display_spectrograms(wave_read_1, signal_1, title_1, wave_read_2, signal_2, title_2):
     sr1 = wave_read_1.getframerate()
@@ -73,6 +79,26 @@ def display_spectrograms(wave_read_1, signal_1, title_1, wave_read_2, signal_2, 
     plt.tight_layout()
     plt.show()
 
+
+def display_temporal_FFT_mel(signal, wave_read):
+    Fs = wave_read.getframerate()  # frequence d'echantillonnage
+    n1 = 9900  # indice de début
+    sig_length = 512  # longueur de la fenetre
+    filter_nb = 24  # nombre de filtres Mel
+    title = "Loc1V1 - Son voisé"
+
+    en = canaux.canaux(signal, n1, sig_length, Fs, filter_nb, title)
+    print(en)
+    print(len(en))
+    segment = signal[n1:n1 + sig_length]
+    fft_result = np.abs(np.fft.rfft(segment)) # fft
+
+    # display results
+    print(f"en : {en}")
+    print(f"en dimension : {len(en)}")
+    print(f"FFT dimension : {len(fft_result)}")
+
+
 if __name__ == "__main__":
     loc1V1_signal, loc1V1_wr = load_audio('data/Loc1V1.wav')
     loc1V2_signal, loc1V2_wr = load_audio('data/Loc1V2.wav')
@@ -85,3 +111,4 @@ if __name__ == "__main__":
     # stream_audio(wave_read)
     # display_spectrograms(loc1V1_wr, loc1V1_signal, "Loc1V1", loc1V2_wr, loc1V2_signal, "Loc1V2")
     # display_spectrograms(loc1V1_wr, loc1V1_signal, "Loc1V1", loc2V1_wr, loc2V1_signal, "Loc2V1")
+    display_temporal_FFT_mel(loc1V1_signal, loc1V1_wr)
