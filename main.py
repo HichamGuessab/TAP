@@ -3,50 +3,48 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pyaudio
 
-# Loading audio file
-filename = 'data/Loc1V1.wav'
-wf = wave.open(filename, 'rb')
+def load_audio(filename):
+    wave_read = wave.open(filename, 'rb')
+    frames = wave_read.readframes(wave_read.getnframes())
+    signal = np.frombuffer(frames, dtype=np.int16)
+    return signal, wave_read
 
-# ---------- DISPLAY DATA ----------
+def display_waveform(signal):
+    plt.figure()
+    plt.plot(signal)
+    plt.title('Audio Signal')
+    plt.xlabel('Samples')
+    plt.ylabel('Amplitude')
+    plt.show()
 
-# Retrieve parameters
-# n_channels = wf.getnchannels()
-# sample_width = wf.getsampwidth()
-# framerate = wf.getframerate()
-# n_frames = wf.getnframes()
-#
-# # Data extraction
-# signal = wf.readframes(n_frames)
-# signal = np.frombuffer(signal, dtype=np.int16)
-#
-# # Plot signal
-# plt.figure()
-# plt.plot(signal)
-# plt.title('Audio Signal Loc1V1')
-# plt.xlabel('Samples')
-# plt.ylabel('Amplitude')
-# plt.show()
+def stream_audio(wave_read):
+    p = pyaudio.PyAudio()
 
-# ---------- STREAMING DATA ----------
+    try:
+        stream = p.open(format=p.get_format_from_width(wave_read.getsampwidth()),
+                        channels=wave_read.getnchannels(),
+                        rate=wave_read.getframerate(),
+                        output=True)
 
-# Initialize PyAudio
-p = pyaudio.PyAudio()
+        wave_read.rewind()
+        chunk = 1024
+        data = wave_read.readframes(chunk)
 
-# Open a stream to play audio
-stream = p.open(format=p.get_format_from_width(wf.getsampwidth()),
-                channels=wf.getnchannels(),
-                rate=wf.getframerate(),
-                output=True)
+        while data:
+            stream.write(data)
+            data = wave_read.readframes(chunk)
 
-# Read and play audio in chunks
-chunk = 1024
-data = wf.readframes(chunk)
+        stream.stop_stream()
+        stream.close()
+    finally:
+        p.terminate()
 
-while data:
-    stream.write(data)
-    data = wf.readframes(chunk)
+if __name__ == "__main__":
+    filename = 'data/Loc1V1.wav'
+    wave_read = wave.open(filename, 'rb')
 
-# Close the stream and PyAudio
-stream.stop_stream()
-stream.close()
-p.terminate()
+    signal_1, wave_read_1 = load_audio('data/Loc1V1.wav')
+    signal_2, wave_read_2 = load_audio('data/Loc1V2.wav')
+
+    display_waveform(signal_1)
+    stream_audio(wave_read)
