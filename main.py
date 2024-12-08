@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pyaudio
 import functions.canaux as canaux
+import functions.cepstre as cepstre
 
 
 def load_audio(filename):
@@ -85,7 +86,7 @@ def display_temporal_FFT_mel(signal, wave_read):
     n1 = 9900  # indice de début
     sig_length = 512  # longueur de la fenetre
     filter_nb = 24  # nombre de filtres Mel
-    title = "Loc1V1 - Son voisé"
+    title = "Son voisé - Loc1V1"
 
     en = canaux.canaux(signal, n1, sig_length, Fs, filter_nb, title)
     print(en)
@@ -99,6 +100,13 @@ def display_temporal_FFT_mel(signal, wave_read):
     print(f"FFT dimension : {len(fft_result)}")
 
 
+def display_cepstre(signal, title):
+    n1 = 9900  # indice de début
+    sig_length = 512  # longueur de la fenetre
+    filter_nb = 24  # nombre de filtres Mel
+
+    cepstre.cepstre(signal, n1, sig_length, filter_nb, title)
+
 if __name__ == "__main__":
     loc1V1_signal, loc1V1_wr = load_audio('data/Loc1V1.wav')
     loc1V2_signal, loc1V2_wr = load_audio('data/Loc1V2.wav')
@@ -111,4 +119,6 @@ if __name__ == "__main__":
     # stream_audio(wave_read)
     # display_spectrograms(loc1V1_wr, loc1V1_signal, "Loc1V1", loc1V2_wr, loc1V2_signal, "Loc1V2")
     # display_spectrograms(loc1V1_wr, loc1V1_signal, "Loc1V1", loc2V1_wr, loc2V1_signal, "Loc2V1")
-    display_temporal_FFT_mel(loc1V1_signal, loc1V1_wr)
+    # display_temporal_FFT_mel(signal=loc1V1_signal, wave_read=loc1V1_wr)
+    display_cepstre(loc1V2_signal, loc1V2_wr, "Cepstre - Loc1V2")
+    display_cepstre(loc2V1_signal, loc2V1_wr, "Cepstre - Loc2V1")
