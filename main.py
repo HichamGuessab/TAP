@@ -39,12 +39,38 @@ def stream_audio(wave_read):
     finally:
         p.terminate()
 
+def display_spectrograms(wave_read_1, signal_1, title_1, wave_read_2, signal_2, title_2):
+    sr1 = wave_read_1.getframerate()
+    sr2 = wave_read_2.getframerate()
+
+    plt.figure(figsize=(12, 6))
+
+    # First subplot
+    plt.subplot(1, 2, 1)
+    plt.specgram(signal_1, Fs=sr1, scale='dB')
+    plt.colorbar(label='Intensity (dB)')
+    plt.title(title_1)
+    plt.xlabel('Time (s)')
+    plt.ylabel('Frequency (Hz)')
+
+    # Second subplot
+    plt.subplot(1, 2, 2)
+    plt.specgram(signal_2, Fs=sr2, scale='dB')
+    plt.colorbar(label='Intensity (dB)')
+    plt.title(title_2)
+    plt.xlabel('Time (s)')
+    plt.ylabel('Frequency (Hz)')
+
+    plt.tight_layout()
+    plt.show()
+
 if __name__ == "__main__":
     filename = 'data/Loc1V1.wav'
     wave_read = wave.open(filename, 'rb')
 
-    signal_1, wave_read_1 = load_audio('data/Loc1V1.wav')
-    signal_2, wave_read_2 = load_audio('data/Loc1V2.wav')
+    loc1V1_signal, loc1V1_wr = load_audio('data/Loc1V1.wav')
+    loc1V2_signal, loc1V2_wr = load_audio('data/Loc1V2.wav')
 
-    display_waveform(signal_1)
-    stream_audio(wave_read)
+    # display_waveform(signal_1)
+    # stream_audio(wave_read)
+    display_spectrograms(loc1V1_wr, loc1V1_signal, "Loc1V1", loc1V2_wr, loc1V2_signal, "Loc1V2")
